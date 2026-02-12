@@ -1,0 +1,23 @@
+name: CD - Déploiement Runner
+
+on:
+  workflow_run:
+    workflows: ["CI - Vérification HTML"]
+    types:
+      - completed
+
+jobs:
+  deploy-runner:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Déploiement vers Nginx
+        run: |
+          sudo cp -r * /var/www/html/
